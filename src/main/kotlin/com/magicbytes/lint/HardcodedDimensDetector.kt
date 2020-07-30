@@ -21,7 +21,10 @@ class HardcodedDimensDetector : LayoutDetector() {
             "paddingStart",
             "paddingRight",
             "paddingEnd",
-            "contentPadding"
+            "contentPadding",
+            "layout_width",
+            "layout_height",
+            "layout_editor_absoluteX"
         )
     }
 
