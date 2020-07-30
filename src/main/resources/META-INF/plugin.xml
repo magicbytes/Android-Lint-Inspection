@@ -1,11 +1,11 @@
 <idea-plugin>
     <id>com.magicbytes.androidlint</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <name>Andy - Android Inspections</name>
+    <vendor email="magic.bytes.soft@gmail.com" url="http://www.magicbytes.com">MagicBytes</vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    Adds additional inspections for Android:
+    - Hardcoded dimensions
     ]]></description>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
@@ -21,7 +21,7 @@
         <!-- Add your extensions here -->
         <globalInspection shortName="AndroidLintHardcodedDimension" displayName="Hardcoded dimensions"
                           enabledByDefault="true" level="WARNING"
-                          implementationClass="HardcodedDimensionsInspection"/>
+                          implementationClass="com.magicbytes.lint.HardcodedDimensionsInspection"/>
     </extensions>
 
     <actions>
