@@ -13,7 +13,15 @@ class HardcodedDimensDetector : LayoutDetector() {
             "layout_marginRight",
             "layout_marginStart",
             "layout_marginTop",
-            "layout_marginBottom"
+            "layout_marginBottom",
+            "padding",
+            "paddingBottom",
+            "paddingTop",
+            "paddingLeft",
+            "paddingStart",
+            "paddingRight",
+            "paddingEnd",
+            "contentPadding"
         )
     }
 

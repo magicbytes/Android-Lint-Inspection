@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.magicbytes"
-version = "1.1"
+version = "1.2"
 
 repositories {
     mavenCentral()
@@ -18,7 +18,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2020.1.1"
+    version = "2020.2"
     updateSinceUntilBuild = false
     setPlugins("org.jetbrains.kotlin", "org.jetbrains.android")
 }
