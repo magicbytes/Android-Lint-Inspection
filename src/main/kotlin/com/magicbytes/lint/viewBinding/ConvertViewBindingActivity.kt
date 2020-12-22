@@ -2,13 +2,15 @@ package com.magicbytes.lint.viewBinding
 
 import com.google.common.base.CaseFormat
 import com.intellij.psi.codeStyle.CodeStyleManager
-import org.jetbrains.kotlin.idea.references.SyntheticPropertyAccessorReference
-import org.jetbrains.kotlin.psi.*
+import com.magicbytes.lint.viewBinding.utils.findMethodWithName
+import com.magicbytes.lint.viewBinding.utils.replaceAllSyntheticAccessWithBinding
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtPsiFactory
 
 class ConvertViewBindingActivity(private val element: KtClass) {
     fun convert() {
-        val allMethods = element.body?.functions.orEmpty()
-        val onCreateMethod = allMethods.first { it.name == "onCreate" }
+        val onCreateMethod = element.findMethodWithName("onCreate")!!
         val setContentExpression = onCreateMethod.bodyBlockExpression?.statements.orEmpty().firstOrNull {
             it.text.startsWith("setContentView(R.layout.")
         } as? KtCallExpression ?: return
@@ -19,7 +21,7 @@ class ConvertViewBindingActivity(private val element: KtClass) {
 
         createProperty(fullBindingName)
         addBindingOnCreate(setContentExpression, fullBindingName)
-        replaceAllSyntheticAccessWithBinding()
+        element.replaceAllSyntheticAccessWithBinding()
     }
 
     private fun createProperty(fullBindingName: String) {
@@ -45,29 +47,5 @@ class ConvertViewBindingActivity(private val element: KtClass) {
 
         setContentExpression.replace(firstLineExpression)
         CodeStyleManager.getInstance(setContentExpression.project).reformat(setContentExpression)
-    }
-
-    private fun replaceAllSyntheticAccessWithBinding() {
-        element.accept(object : KtTreeVisitorVoid() {
-            override fun visitBinaryExpression(expression: KtBinaryExpression) {
-                super.visitBinaryExpression(expression)
-
-                if (expression.isSyntheticAccessor) {
-                    expression.convertToBindingCall()
-                }
-            }
-        })
-    }
-
-    private val KtBinaryExpression.isSyntheticAccessor: Boolean
-        get() {
-            val dotExpression = left as? KtDotQualifiedExpression ?: return false
-            val nameExpression = dotExpression.receiverExpression as? KtNameReferenceExpression ?: return false
-            return nameExpression.references.any { it is SyntheticPropertyAccessorReference }
-        }
-
-    private fun KtBinaryExpression.convertToBindingCall() {
-        val newBinaryExpression = KtPsiFactory(this).createExpression("binding.$text")
-        this.replace(newBinaryExpression)
     }
 }
