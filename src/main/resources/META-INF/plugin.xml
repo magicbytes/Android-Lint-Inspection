@@ -18,10 +18,18 @@
     <depends>org.jetbrains.android</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceInterface="com.magicbytes.lint.RetrofitCurlGeneratorService"
+            serviceImplementation="com.magicbytes.lint.RetrofitCurlGeneratorServiceImpl" />
+
         <!-- Add your extensions here -->
         <globalInspection shortName="AndroidLintHardcodedDimension" displayName="Hardcoded dimensions"
-                          enabledByDefault="true" level="WARNING"
-                          implementationClass="com.magicbytes.lint.HardcodedDimensionsInspection"/>
+            enabledByDefault="true" level="WARNING"
+            implementationClass="com.magicbytes.lint.HardcodedDimensionsInspection" />
+
+        <intentionAction>
+            <className>com.magicbytes.lint.viewBinding.ConvertViewBindingIntention</className>
+            <category>Kotlin</category>
+        </intentionAction>
     </extensions>
 
     <actions>
