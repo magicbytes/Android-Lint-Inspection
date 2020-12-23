@@ -2,7 +2,9 @@ package com.magicbytes.lint.viewBinding
 
 import com.google.common.base.CaseFormat
 import com.intellij.psi.codeStyle.CodeStyleManager
+import com.magicbytes.lint.viewBinding.utils.createProperty
 import com.magicbytes.lint.viewBinding.utils.findMethodWithName
+import com.magicbytes.lint.viewBinding.utils.fullBindingClassName
 import com.magicbytes.lint.viewBinding.utils.replaceAllSyntheticAccessWithBinding
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtClass
@@ -15,19 +17,11 @@ class ConvertViewBindingActivity(private val element: KtClass) {
             it.text.startsWith("setContentView(R.layout.")
         } as? KtCallExpression ?: return
 
-        val nameLayout = setContentExpression.text.substringAfter("R.layout.").removeSuffix(")").trim()
-        val nameLayoutAsClass = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, nameLayout)
-        val fullBindingName = nameLayoutAsClass + "Binding"
+        val fullBindingName = setContentExpression.fullBindingClassName
 
-        createProperty(fullBindingName)
+        element.createProperty("private lateinit var binding: $fullBindingName")
         addBindingOnCreate(setContentExpression, fullBindingName)
         element.replaceAllSyntheticAccessWithBinding()
-    }
-
-    private fun createProperty(fullBindingName: String) {
-        val factory = KtPsiFactory(element)
-        val property = factory.createProperty("private lateinit var binding: $fullBindingName")
-        element.body?.addAfter(property, element.body?.firstChild)
     }
 
     private fun addBindingOnCreate(

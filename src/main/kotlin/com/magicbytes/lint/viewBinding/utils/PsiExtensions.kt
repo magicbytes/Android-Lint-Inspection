@@ -1,17 +1,37 @@
 package com.magicbytes.lint.viewBinding.utils
 
+import com.google.common.base.CaseFormat
 import org.jetbrains.kotlin.idea.references.SyntheticPropertyAccessorReference
 import org.jetbrains.kotlin.psi.*
 
 val KtBinaryExpression.isSyntheticAccessor: Boolean
     get() {
-        val dotExpression = left as? KtDotQualifiedExpression ?: return false
+        var dotExpression = if (isDoubleDotExpression) {
+            (left as KtDotQualifiedExpression).receiverExpression as KtDotQualifiedExpression
+        } else {
+            left as? KtDotQualifiedExpression
+        } ?: return false
+
+        if (dotExpression.receiverExpression is KtDotQualifiedExpression) {
+            dotExpression = dotExpression.receiverExpression as KtDotQualifiedExpression
+        }
         val nameExpression = dotExpression.receiverExpression as? KtNameReferenceExpression ?: return false
         return nameExpression.references.any { it is SyntheticPropertyAccessorReference }
     }
 
+val KtBinaryExpression.isDoubleDotExpression: Boolean
+    get() {
+        val dotExpression = left as? KtDotQualifiedExpression ?: return false
+        return dotExpression.receiverExpression is KtDotQualifiedExpression
+    }
+
 fun KtBinaryExpression.convertToBindingCall() {
-    val newBinaryExpression = KtPsiFactory(this).createExpression("binding.$text")
+    val textBinding = if (isDoubleDotExpression) {
+        text.substringAfter(".")
+    } else {
+        text
+    }
+    val newBinaryExpression = KtPsiFactory(this).createExpression("binding.$textBinding")
     this.replace(newBinaryExpression)
 }
 
@@ -31,3 +51,20 @@ fun KtClass.replaceAllSyntheticAccessWithBinding() {
         }
     })
 }
+
+fun KtClass.createProperty(propertyText: String) {
+    val factory = KtPsiFactory(this)
+    val property = factory.createProperty(propertyText)
+    body?.addAfter(property, body?.firstChild)
+}
+
+val KtExpression.fullBindingClassName: String
+    get() {
+        val nameLayout = text.substringAfter("R.layout.")
+            .removeSuffix(")")
+            .removeSuffix(", container, false")
+            .trim()
+
+        val nameLayoutAsClass = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, nameLayout)
+        return nameLayoutAsClass + "Binding"
+    }

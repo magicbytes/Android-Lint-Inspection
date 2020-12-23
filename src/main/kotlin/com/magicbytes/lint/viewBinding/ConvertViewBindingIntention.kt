@@ -18,6 +18,9 @@ class ConvertViewBindingIntention : SelfTargetingIntention<KtClass>(KtClass::cla
             "AppCompatActivity" -> {
                 ConvertViewBindingActivity(element).convert()
             }
+            "Fragment" -> {
+                ConvertViewBindingFragment(element).convert()
+            }
         }
     }
 
