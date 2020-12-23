@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.magicbytes"
-version = "1.2.1"
+version = "1.3"
 
 repositories {
     mavenCentral()
@@ -18,10 +18,14 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "2020.3"
+    version = "201.8743.12"
+    type = "IC"
     updateSinceUntilBuild = false
-    setPlugins("org.jetbrains.kotlin", "org.jetbrains.android")
+    setPlugins("org.jetbrains.kotlin", "android")
+
+    alternativeIdePath = "/Users/alex/Library/Application Support/JetBrains/Toolbox/apps/AndroidStudio/ch-0/201.6953283/Android Studio.app/Contents"
 }
+
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
